@@ -159,7 +159,21 @@ class MainWindow(QMainWindow):
             return
 
         try:
-            result = subprocess.run([str(script_path)], check=True, capture_output=True, text=True)
+            if os_type == "Windows":
+                subprocess.run(
+                    ["cmd", "/c", str(script_path)],
+                    check=True,
+                    capture_output=True,
+                    text=True
+                )
+            else:  # Linux or macOS
+                subprocess.run(
+                    ["bash", str(script_path)],
+                    check=True,
+                    capture_output=True,
+                    text=True
+                )
+
             self.update_status_label.setText("Update successful, restarting...")
             QApplication.processEvents()
             self.restart_app()
