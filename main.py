@@ -53,7 +53,45 @@ class MainWindow(QMainWindow):
         self.stacked_widget.addWidget(self.settings_page)
 
         # --- Initial Page ---
-        self.stacked_widget.setCurrentWidget(self.ecom_page)
+        self.show_ecom_page()
+
+        self.setStyleSheet("""
+            QWidget {
+                font-family: Segoe UI, Arial;
+                font-size: 11pt;
+            }
+
+            /* Sidebar background */
+            QWidget {
+                background-color: #1f2933;
+            }
+
+            QPushButton {
+                background-color: #34495e;
+                color: white;
+                border: 1px solid #1a252f;
+                border-radius: 6px;
+                padding: 8px 12px;
+                text-align: left;
+            }
+
+            QPushButton:hover {
+                background-color: #3c5a73;
+            }
+
+            QPushButton:checked {
+                background-color: #1abc9c;
+                border-color: #16a085;
+            }
+
+            QTabWidget::pane {
+                border-top: 1px solid #cccccc;
+            }
+
+            QTabBar::tab {
+                padding: 6px 12px;
+            }
+        """)
 
     def build_sidebar(self):
         sidebar_widget = QWidget()
@@ -63,19 +101,23 @@ class MainWindow(QMainWindow):
         sidebar_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
 
         sidebar_widget.setFixedWidth(200)
-        sidebar_widget.setStyleSheet("background-color: #2c3e50; color: white;")
 
         # --- Buttons ---
         self.ecom_button = QPushButton("Ecom")
-        self.ecom_button.clicked.connect(lambda: self.stacked_widget.setCurrentWidget(self.ecom_page))
-        sidebar_layout.addWidget(self.ecom_button)
+        self.ecom_button.setCheckable(True)
+        self.ecom_button.clicked.connect(self.show_ecom_page)
 
         self.youtube_button = QPushButton("YouTube/TikTok")
-        self.youtube_button.clicked.connect(lambda: self.stacked_widget.setCurrentWidget(self.youtube_page))
-        sidebar_layout.addWidget(self.youtube_button)
+        self.youtube_button.setCheckable(True)
+        self.youtube_button.clicked.connect(self.show_youtube_page)
 
         self.settings_button = QPushButton("Settings")
-        self.settings_button.clicked.connect(lambda: self.stacked_widget.setCurrentWidget(self.settings_page))
+        self.settings_button.setCheckable(True)
+        self.settings_button.clicked.connect(self.show_settings_page)
+
+        sidebar_layout.addWidget(self.ecom_button)
+        sidebar_layout.addWidget(self.youtube_button)
+        sidebar_layout.addStretch()
         sidebar_layout.addWidget(self.settings_button)
 
         return sidebar_widget
@@ -126,6 +168,26 @@ class MainWindow(QMainWindow):
         layout.addWidget(self.update_status_label)
 
         return page
+
+    def reset_sidebar_buttons(self):
+        self.ecom_button.setChecked(False)
+        self.youtube_button.setChecked(False)
+        self.settings_button.setChecked(False)
+
+    def show_ecom_page(self):
+        self.stacked_widget.setCurrentWidget(self.ecom_page)
+        self.reset_sidebar_buttons()
+        self.ecom_button.setChecked(True)
+
+    def show_youtube_page(self):
+        self.stacked_widget.setCurrentWidget(self.youtube_page)
+        self.reset_sidebar_buttons()
+        self.youtube_button.setChecked(True)
+
+    def show_settings_page(self):
+        self.stacked_widget.setCurrentWidget(self.settings_page)
+        self.reset_sidebar_buttons()
+        self.settings_button.setChecked(True)
 
     def restart_app(self):
         """Restarts the current application."""
